@@ -7,7 +7,19 @@
 // ======================================================
 
 // ======================================================
+const drawLine = (angleInDegrees) => {
+  let angleInRadians = angleInDegrees * Math.PI / 180;
 
+  ctx.beginPath();
+  ctx.moveTo(710, 696);
+  ctx.lineTo(710 + 100 * Math.cos(angleInRadians), 696 + 100 * Math.sin(angleInRadians));
+  ctx.closePath();
+//  ctx.fill();
+}
+
+//for (let i = 0; i < 361; i++) {
+//  drawLine(i);
+//}
 // ======================================================
 
 //const drawLineWithAngle = (angle) => {

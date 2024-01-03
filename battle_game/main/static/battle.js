@@ -77,11 +77,6 @@ var drawLine = function (angleInRadians) {
     };
 
 
-
-
-
-
-
 // Рисуем корабль
 var drawShip = function (x, y) {
     ctx.beginPath();
@@ -113,7 +108,6 @@ drawBorder();
 drawScore();
 drawSea();
 drawLine(); // Рисует линию под углом 0 градусов
-//drawLine(Math.PI); // Рисует линию под углом 180 градусов
 
 drawShip(x, y);
 x = update(x);
