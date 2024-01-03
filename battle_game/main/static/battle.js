@@ -104,7 +104,7 @@ var drawLine = function (angleInDegrees) {
 
 // Класс пушки
 var Tube = function () {
-  this.angleInDegrees = 45;
+  this.angleInDegrees = 90;
   this.angelSpeed = 0;
 };
 
@@ -129,18 +129,6 @@ Tube.prototype.setDirection = function (direction) {
     this.angelSpeed = -1;
   }
 };
-
-var tube = new Tube(); // создание объекта
-var keyActions = {
-  37: "left",
-  39: "right",
-};
-
-$("body").keydown(function (event) {
-  var direction = keyActions[event.keyCode];
-  tube.setDirection(direction);
-});
-
 
 // ==================================================================================
 // черновой вариант
@@ -194,14 +182,22 @@ Torpedo.prototype.setLaunch = function (launch) {
    }
 };
 
+var tube = new Tube();
 var torpedo = new Torpedo();
+
 var keyActions = {
-  32: "launch",
+    32: "launch",
+    37: "left",
+    39: "right",
 };
 
 $("body").keydown(function (event) {
-  var launch = keyActions[event.keyCode];
-  torpedo.setLaunch(launch);
+  var setting = keyActions[event.keyCode];
+  if (setting === "launch") {
+    torpedo.setLaunch(setting);
+  } else {
+    tube.setDirection(setting);
+  }
 });
 
 
