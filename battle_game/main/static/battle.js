@@ -2,13 +2,13 @@
 // Нарисовать счетчик подбитых кораблей
 // Нарисовать линию моря
 // Нарисовать торпедную пушку
-// Нарисовать пять разных типов кораблей
-// Рандомно направлять корабли по морю
 // Направлять пушку вправо или влево
 // Нарисовать движущуюся торпеду по направлению пушки
+// Нарисовать пять разных типов кораблей
+// Рандомно направлять корабли по морю
 // Если есть контакт, то нарисовать взрыв и прибавить очко
 // <canvas id="canvas" width="1420" height="696"></canvas>
-// 710 x 348
+// половина 710 x 348
 
 // Настройка «холста»
 var canvas = document.getElementById("canvas");
@@ -19,7 +19,7 @@ var width = canvas.width;
 var height = canvas.height;
 
 // Вычисляем ширину и высоту в ячейках
-var blockSize = 5;
+var blockSize = 1;
 var widthInBlocks = width / blockSize;
 var heightInBlocks = height / blockSize;
 
@@ -54,11 +54,11 @@ var gameOver = function () {
   ctx.fillText("Конец игры", width / 2, height / 2);
 };
 
-// Рисуем рамку
-drawBorder();
-
-// Рисуем счет
-drawScore();
+//// Рисуем рамку
+//drawBorder();
+//
+//// Рисуем счет
+//drawScore();
 
 // Рисуем море
 var drawSea = function () {
@@ -67,16 +67,6 @@ var drawSea = function () {
     ctx.lineTo(width, 250);
     ctx.stroke();
 };
-
-// Рисуем пушку
-var drawLine = function (angleInDegrees) {
-    let angleInRadians = angleInDegrees * Math.PI / 180;
-    ctx.beginPath();
-    ctx.moveTo(710, 696);
-    ctx.lineTo(710 + 100 * Math.cos(angleInRadians), 696 - 100 * Math.sin(angleInRadians));
-     ctx.stroke();
-    };
-
 
 // Рисуем корабль
 var drawShip = function (x, y) {
@@ -90,31 +80,90 @@ var drawShip = function (x, y) {
 };
 
 // изменение позиции корабля
-  var update = function (coordinate) {
-    coordinate += 1;
-    if (coordinate > 1420) {
-        coordinate = -150;
-    }
-    return coordinate;
-  };
+var update = function (coordinate) {
+coordinate += 1;
+if (coordinate > 1420) {
+    coordinate = -150;
+}
+return coordinate;
+};
+
+// Рисуем пушку
+var drawLine = function (angleInDegrees) {
+    let angleInRadians = angleInDegrees * Math.PI / 180;
+    ctx.beginPath();
+    ctx.moveTo(710, 696);
+    ctx.lineTo(710 + 100 * Math.cos(angleInRadians), 696 - 100 * Math.sin(angleInRadians));
+     ctx.stroke();
+    };
 
 
-// Движение корабля
-var x = 50;
+// Атрибуты пушки
+var Tube = function () {
+  this.angleInDegrees = 90;
+  this.angelSpeed = 0;
+};
+
+Tube.prototype.move = function () {
+  this.angleInDegrees += this.angelSpeed;
+  if (this.angleInDegrees < 45) {
+    this.angleInDegrees = 45;
+  } else if (this.angleInDegrees > 135) {
+    this.angleInDegrees = 135;;
+  }
+};
+
+Tube.prototype.draw = function () {
+  drawLine(this.angleInDegrees);
+};
+
+Tube.prototype.setDirection = function (direction) {
+  if (direction === "left") {
+    this.angelSpeed = 1;
+  } else if (direction === "right") {
+    this.angelSpeed = -1;
+  } else if (direction === "up") {
+    this.angelSpeed = 0;
+  }
+};
+
+var tube = new Tube();
+var keyActions = {
+  32: "stop",
+  37: "left",
+  38: "up",
+  39: "right",
+  40: "down"
+};
+
+$("body").keydown(function (event) {
+  var direction = keyActions[event.keyCode];
+  tube.setDirection(direction);
+});
+
+
+
+
+
+
+// Запуск программы
+// Основной движок
+var x = -100;
 var y = 210;
 setInterval(function () {
-ctx.clearRect(0, 0, width, height);
+    ctx.clearRect(0, 0, width, height);
 
-drawBorder();
-drawScore();
-drawSea();
-drawLine(135); // Рисует линию под углом
+    drawBorder();
+    drawScore();
+    drawSea();
+    tube.draw(); // Рисует линию под углом
+    tube.move();
 
-drawShip(x, y);
-x = update(x);
-y = y;
+    drawShip(x, y); // Рисует плывущий корабль
+    x = update(x);
+    y = y;
 
-ctx.strokeRect(0, 0, width, height);
+    ctx.strokeRect(0, 0, width, height);
 }, 30);
 
 
