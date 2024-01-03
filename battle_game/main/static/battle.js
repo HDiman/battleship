@@ -108,7 +108,7 @@ ctx.clearRect(0, 0, width, height);
 drawBorder();
 drawScore();
 drawSea();
-drawLine(135); // Рисует линию под углом 0 градусов
+drawLine(135); // Рисует линию под углом
 
 drawShip(x, y);
 x = update(x);
