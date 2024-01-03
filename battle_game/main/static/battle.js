@@ -1,8 +1,8 @@
-// Настройка холста
-// Нарисовать счетчик подбитых кораблей
-// Нарисовать линию моря
-// Нарисовать торпедную пушку
-// Направлять пушку вправо или влево
+// Настройка холста +
+// Нарисовать счетчик подбитых кораблей +
+// Нарисовать линию моря +
+// Нарисовать торпедную пушку +
+// Направлять пушку вправо или влево +
 // Нарисовать движущуюся торпеду по направлению пушки
 // Нарисовать пять разных типов кораблей
 // Рандомно направлять корабли по морю
@@ -88,6 +88,11 @@ if (coordinate > 1420) {
 return coordinate;
 };
 
+
+// ==================================================================================
+// рабочий код
+
+
 // Рисуем пушку
 var drawLine = function (angleInDegrees) {
     let angleInRadians = angleInDegrees * Math.PI / 180;
@@ -97,15 +102,15 @@ var drawLine = function (angleInDegrees) {
      ctx.stroke();
     };
 
-
-// Атрибуты пушки
+// Класс пушки
 var Tube = function () {
-  this.angleInDegrees = 90;
+  this.angleInDegrees = 45;
   this.angelSpeed = 0;
 };
 
 Tube.prototype.move = function () {
   this.angleInDegrees += this.angelSpeed;
+  this.angelSpeed = 0;
   if (this.angleInDegrees < 45) {
     this.angleInDegrees = 45;
   } else if (this.angleInDegrees > 135) {
@@ -122,18 +127,13 @@ Tube.prototype.setDirection = function (direction) {
     this.angelSpeed = 1;
   } else if (direction === "right") {
     this.angelSpeed = -1;
-  } else if (direction === "up") {
-    this.angelSpeed = 0;
   }
 };
 
-var tube = new Tube();
+var tube = new Tube(); // создание объекта
 var keyActions = {
-  32: "stop",
   37: "left",
-  38: "up",
   39: "right",
-  40: "down"
 };
 
 $("body").keydown(function (event) {
@@ -142,9 +142,102 @@ $("body").keydown(function (event) {
 });
 
 
+// ==================================================================================
+// черновой вариант
 
 
+// изменение позиции корабля
+//var update = function (coordinate) {
+//coordinate += 1;
+//if (coordinate > 1420) {
+//    coordinate = -150;
+//}
+//return coordinate;
+//};
 
+
+// Рисуем торпеду
+var drawTorpedo = function (x, y, angleInDegrees) {
+    let angleInRadians = angleInDegrees * Math.PI / 180;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + 10 * Math.cos(angleInRadians), y - 10 * Math.sin(angleInRadians));
+    ctx.stroke();
+    };
+
+// Класс Торпеды
+var Torpedo = function () {
+  this.angleInRadians = tube.angleInDegrees * Math.PI / 180;
+  this.xTorpedo = 710 + 100 * Math.cos(this.angleInRadians);
+  this.yTorpedo = 696 - 100 * Math.sin(this.angleInRadians);
+  this.angelSpeedTorpedo = 0;
+};
+
+Torpedo.prototype.move = function () {
+  this.xTorpedo -= this.angelSpeedTorpedo * Math.cos(this.angleInRadians);
+  this.yTorpedo -= this.angelSpeedTorpedo * Math.sin(this.angleInRadians);
+
+//  if (this.xTorpedo < 45) {
+//    this.angleInDegrees = 45;
+//  } else if (this.angleInDegrees > 135) {
+//    this.angleInDegrees = 135;;
+//  }
+};
+
+Torpedo.prototype.draw = function () {
+  drawTorpedo(this.xTorpedo, this.yTorpedo, tube.angleInDegrees);
+};
+
+Torpedo.prototype.setLaunch = function (launch) {
+  if (launch === "launch") {
+    this.angelSpeedTorpedo = 1;
+   }
+};
+
+var torpedo = new Torpedo();
+var keyActions = {
+  32: "launch",
+};
+
+$("body").keydown(function (event) {
+  var launch = keyActions[event.keyCode];
+  torpedo.setLaunch(launch);
+});
+
+
+// ==================================================================================
+// черновой вариант - пока не используется в программе
+
+// Задаем конструктор Block (ячейка)
+var Block = function (col, row) {
+  this.col = col;
+  this.row = row;
+};
+
+// Рисуем Точку-Снаряд в позиции ячейки
+Block.prototype.drawSquare = function (color) {
+  var x = this.col * blockSize;
+  var y = this.row * blockSize;
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, blockSize, blockSize);
+};
+
+// Рисуем круг в позиции ячейки
+//Block.prototype.drawCircle = function (color) {
+//  var centerX = this.col * blockSize + blockSize / 2;
+//  var centerY = this.row * blockSize + blockSize / 2;
+//  ctx.fillStyle = color;
+//  circle(centerX, centerY, blockSize / 2, true);
+//};
+
+// Проверяем, находится ли эта ячейка в той же позиции, что и ячейка otherBlock
+Block.prototype.equal = function (otherBlock) {
+  return this.col === otherBlock.col && this.row === otherBlock.row;
+};
+
+
+// ==================================================================================
+// рабочий код
 
 // Запуск программы
 // Основной движок
@@ -156,8 +249,10 @@ setInterval(function () {
     drawBorder();
     drawScore();
     drawSea();
-    tube.draw(); // Рисует линию под углом
-    tube.move();
+    tube.draw(); // Рисует линию
+    tube.move(); // Двигает линию
+    torpedo.draw(); // Рисует торпеду
+    torpedo.move(); // Запускает торпеду
 
     drawShip(x, y); // Рисует плывущий корабль
     x = update(x);
