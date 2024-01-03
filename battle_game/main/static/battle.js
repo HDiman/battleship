@@ -69,10 +69,11 @@ var drawSea = function () {
 };
 
 // Рисуем пушку
-var drawLine = function (angleInRadians) {
+var drawLine = function (angleInDegrees) {
+    let angleInRadians = angleInDegrees * Math.PI / 180;
     ctx.beginPath();
     ctx.moveTo(710, 696);
-    ctx.lineTo(710 + 100 / Math.sqrt(2), 696 - 100 / Math.sqrt(2));
+    ctx.lineTo(710 + 100 * Math.cos(angleInRadians), 696 - 100 * Math.sin(angleInRadians));
      ctx.stroke();
     };
 
@@ -107,7 +108,7 @@ ctx.clearRect(0, 0, width, height);
 drawBorder();
 drawScore();
 drawSea();
-drawLine(); // Рисует линию под углом 0 градусов
+drawLine(135); // Рисует линию под углом 0 градусов
 
 drawShip(x, y);
 x = update(x);
