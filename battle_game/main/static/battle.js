@@ -94,11 +94,12 @@ return coordinate;
 
 
 // Рисуем пушку
-var drawLine = function (angleInDegrees) {
-    let angleInRadians = angleInDegrees * Math.PI / 180;
+var drawLine = function (x, y) {
+//    let angleInRadians = angleInDegrees * Math.PI / 180;
     ctx.beginPath();
     ctx.moveTo(710, 696);
-    ctx.lineTo(710 + 100 * Math.cos(angleInRadians), 696 - 100 * Math.sin(angleInRadians));
+//    ctx.lineTo(710 + 100 * Math.cos(angleInRadians), 696 - 100 * Math.sin(angleInRadians));
+    ctx.lineTo(x, y);
      ctx.stroke();
     };
 
@@ -110,6 +111,10 @@ var Tube = function () {
 
 Tube.prototype.move = function () {
   this.angleInDegrees += this.angelSpeed;
+  let angleInRadians = this.angleInDegrees * Math.PI / 180;
+  this.xTube = 710 + 100 * Math.cos(angleInRadians);
+  this.yTube = 696 - 100 * Math.sin(angleInRadians);
+
   this.angelSpeed = 0;
   if (this.angleInDegrees < 45) {
     this.angleInDegrees = 45;
@@ -119,7 +124,7 @@ Tube.prototype.move = function () {
 };
 
 Tube.prototype.draw = function () {
-  drawLine(this.angleInDegrees);
+  drawLine(this.xTube, this.yTube);
 };
 
 Tube.prototype.setDirection = function (direction) {
@@ -155,21 +160,22 @@ var drawTorpedo = function (x, y, angleInDegrees) {
 
 // Класс Торпеды
 var Torpedo = function () {
-  this.angleInRadians = tube.angleInDegrees * Math.PI / 180;
-  this.xTorpedo = 710 + 100 * Math.cos(this.angleInRadians);
-  this.yTorpedo = 696 - 100 * Math.sin(this.angleInRadians);
-  this.angelSpeedTorpedo = 0;
+   this.angleInRadians = tube.angleInDegrees * Math.PI / 180;
+   this.xTorpedo = 710 + 100 * Math.cos(this.angleInRadians);
+   this.yTorpedo = 696 - 100 * Math.sin(this.angleInRadians);
+   this.angelSpeedTorpedo = 0;
 };
 
 Torpedo.prototype.move = function () {
+
   this.xTorpedo -= this.angelSpeedTorpedo * Math.cos(this.angleInRadians);
   this.yTorpedo -= this.angelSpeedTorpedo * Math.sin(this.angleInRadians);
 
-//  if (this.xTorpedo < 45) {
-//    this.angleInDegrees = 45;
-//  } else if (this.angleInDegrees > 135) {
-//    this.angleInDegrees = 135;;
-//  }
+  if (this.yTorpedo < 260) {
+    this.xTorpedo = 710 + 100 * Math.cos(this.angleInRadians);
+    this.yTorpedo = 696 - 100 * Math.sin(this.angleInRadians);
+    this.angelSpeedTorpedo = 0;
+  }
 };
 
 Torpedo.prototype.draw = function () {
@@ -245,12 +251,12 @@ setInterval(function () {
     drawBorder();
     drawScore();
     drawSea();
-    tube.draw(); // Рисует линию
-    tube.move(); // Двигает линию
+    tube.draw(); // Рисует пушку
+    tube.move(); // Перемещает пушку
     torpedo.draw(); // Рисует торпеду
     torpedo.move(); // Запускает торпеду
 
-    drawShip(x, y); // Рисует плывущий корабль
+    drawShip(x, y); // Рисует движущийся корабль
     x = update(x);
     y = y;
 
