@@ -100,23 +100,25 @@ if (coordinate > 1420) {
 // ==================================================================================
 
 // Рисуем торпеду
-var drawTorpedo = function (x, y, angleInDegrees) {
-//    ctx.strokeStyle = "Turquoise";
-    let angleInRadians = angleInDegrees * Math.PI / 180;
+var drawTorpedo = function (x0, y0, x1, y1) {
     ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + 50 * Math.cos(angleInRadians), y - 50 * Math.sin(angleInRadians));
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
     ctx.stroke();
     };
 
 // Класс Торпеды
 var Torpedo = function () {
+
+   // Начальное значение градуса
    this.angleInDegrees = 90;
 
+   // Расчет радианта. Начальные значения X Y
    this.angleInRadians = this.angleInDegrees * Math.PI / 180;
-   this.xTorpedo = 710 + 100 * Math.cos(this.angleInRadians);
-   this.yTorpedo = 696 - 100 * Math.sin(this.angleInRadians);
+   this.x0Torpedo = 710 + 100 * Math.cos(this.angleInRadians);
+   this.y0Torpedo = 696 - 100 * Math.sin(this.angleInRadians);
 
+   // Значение 0 - нет движения, 1 - есть движение
    this.angelSpeedTorpedo = 0;
 };
 
@@ -132,25 +134,29 @@ Torpedo.prototype.move = function () {
 
   // Расчет начальной точки торпеды
   this.angleInRadians = this.angleInDegrees * Math.PI / 180;
-  this.xTorpedo += this.angelSpeedTorpedo * Math.cos(this.angleInRadians);
-  this.yTorpedo -= this.angelSpeedTorpedo * Math.sin(this.angleInRadians);
+  this.x0Torpedo += this.angelSpeedTorpedo * Math.cos(this.angleInRadians);
+  this.y0Torpedo -= this.angelSpeedTorpedo * Math.sin(this.angleInRadians);
+
+  // Расчет конечной точки торпеды
+  this.x1Torpedo = this.x0Torpedo + 50 * Math.cos(this.angleInRadians);
+  this.y1Torpedo = this.y0Torpedo - 50 * Math.sin(this.angleInRadians);
 
   // Табло координат
   score1 = this.xTorpedo; // X coordinate
   score2 = this.yTorpedo; // Y coordinate
 
   // Возврат на начальную позицию при превышении 300 по Y
-  if (this.yTorpedo < 300) {
-    this.xTorpedo = 710 + 100 * Math.cos(this.angleInRadians);
-    this.yTorpedo = 696 - 100 * Math.sin(this.angleInRadians);
-    this.angelSpeedTorpedo = 0;
-  }
+//  if (this.yTorpedo < 300) {
+//    this.xTorpedo = 710 + 100 * Math.cos(this.angleInRadians);
+//    this.yTorpedo = 696 - 100 * Math.sin(this.angleInRadians);
+//    this.angelSpeedTorpedo = 0;
+//  }
 };
 
 // Рисунок торпеды
 Torpedo.prototype.draw = function () {
    score3 = this.angleInDegrees; // проверка текущего угла
-   drawTorpedo(this.xTorpedo, this.yTorpedo, this.angleInDegrees);
+   drawTorpedo(this.x0Torpedo, this.y0Torpedo, this.x1Torpedo, this.y1Torpedo);
 };
 
 // Расчет угла и Пуск
