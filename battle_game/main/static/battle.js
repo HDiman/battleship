@@ -14,7 +14,7 @@
 
 
 // Настройка «холста»
-// <canvas id="canvas" width="1420" height="696"></canvas>
+// экран 1420 х 696
 // половина 710 x 348
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
@@ -138,13 +138,13 @@ var Torpedo = function () {
 Torpedo.prototype.move = function () {
 
   // Ограничение пушки больше 135 и меньше 45 градусов
-  if (this.angleInDegrees < 45) {
-    this.angleInDegrees = 45;
-  } else if (this.angleInDegrees > 135) {
-    this.angleInDegrees = 135;
+  if (this.angleInDegrees < 60) {
+    this.angleInDegrees = 60;
+  } else if (this.angleInDegrees > 120) {
+    this.angleInDegrees = 120;
   };
 
-  // Расчет начальной точки торпеды
+  // Расчет начальной точки торпеды при движении
   this.angleInRadians = this.angleInDegrees * Math.PI / 180;
   this.x0Torpedo += this.angelSpeedTorpedo * Math.cos(this.angleInRadians);
   this.y0Torpedo -= this.angelSpeedTorpedo * Math.sin(this.angleInRadians);
@@ -155,12 +155,19 @@ Torpedo.prototype.move = function () {
 
   // Изменение размера торпеды
   if (this.angelSpeedTorpedo === 1) {
-     this.torpedoSize -= 0.1;
+    if (this.angleInDegrees < 95 && this.angleInDegrees > 85) {
+        this.torpedoSize -= 0.1098;
+    } else {
+        this.torpedoSize -= 0.09;
+    }
+    if (this.torpedoSize < 2) {
+        this.torpedoSize = 1;
+    }
   };
 
   // Табло координат
-  score1 = this.xTorpedo; // X coordinate
-  score2 = this.yTorpedo; // Y coordinate
+  score1 = this.x1Torpedo; // X coordinate
+  score2 = this.y1Torpedo; // Y coordinate
 
   // Возврат на начальную позицию при превышении 300 по Y
   if (this.y1Torpedo < 250) {
