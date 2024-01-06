@@ -96,19 +96,13 @@ var Block = function (x0, y0, x1, y1) {
 
 // Рисуем торпеду в позиции ячейки
 Block.prototype.drawTorpedo = function () {
-//  let x0Torpedo = this.x0;
-//  let y0Torpedo = this.y0;
-//  let x1Torpedo = this.x1;
-//  let y1Torpedo = this.y1;
   torpedoLines(this.x0, this.y0, this.x1, this.y1);
 };
 
-//// Рисуем круг в позиции ячейки
-//Block.prototype.drawCircle = function (color) {
-//  var centerX = this.col * blockSize + blockSize / 2;
-//  var centerY = this.row * blockSize + blockSize / 2;
-//  ctx.fillStyle = color;
-//  circle(centerX, centerY, blockSize / 2, true);
+// Рисуем судно в позиции ячейки
+//Block.prototype.drawShip = function () {
+//  torpedoLines(this.x0, this.y0, this.x1, this.y1);
+
 //};
 
 // Проверяем, находится ли эта ячейка в той же позиции, что и ячейка otherBlock
@@ -123,7 +117,7 @@ Block.prototype.drawTorpedo = function () {
 var drawShip = function (x, y) {
     ctx.beginPath();
     ctx.moveTo(x, y); // x0, y0
-    ctx.lineTo(x + 100, y); // линия вправо x1, y1
+    ctx.lineTo(x + 100, y); // x1, y1 линия вправо
     ctx.lineTo(x + 180, y - 50); // линия вверх
     ctx.lineTo(x - 40, y - 50); // линия влево
     ctx.closePath(); // смыкание начала и конца рисунка (левая стена)
