@@ -19,9 +19,11 @@
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
+// Скорость прокрутки кадров в setInterval
+var stepSetInterval = 30;
+
 // Скорость корабля
 var speed = 1;
-
 
 // Получаем ширину и высоту элемента canvas
 var width = canvas.width;
@@ -221,6 +223,7 @@ var drawFire = function (x1, y1) {
     ctx.lineTo(x1 + 30, y1 - 0);
     ctx.fillStyle = "red";
     ctx.fill();
+//    $("ship").fadeOut(3000);
     };
 
 // Класс Торпеды
@@ -372,7 +375,6 @@ setInterval(function () {
     torpedo.draw(); // Рисует торпеду
     torpedo.move(); // Запускает торпеду
 
-
     ctx.strokeRect(0, 0, width, height);
-}, 30);
+}, stepSetInterval);
 
