@@ -19,6 +19,10 @@
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
+
+// Счетчик горения судна
+var shipwreckCount = 0;
+
 // Скорость прокрутки кадров в setInterval
 var stepSetInterval = 30;
 
@@ -114,6 +118,11 @@ Block.prototype.drawTorpedo = function () {
   torpedoLines(this.x0, this.y0, this.x1, this.y1);
 };
 
+// Рисуем взрыв
+Block.prototype.shipFire = function () {
+  fireLines(this.x1, this.y1);
+};
+
 // Проверяем, находится ли эта ячейка в той же позиции, что и ячейка otherBlock
 Block.prototype.equal = function (otherBlock) {
    if (this.y1 <= otherBlock.y1) {
@@ -204,7 +213,7 @@ var drawTube = function (x0, y0, x1, y1) {
     };
 
 // Рисуем взрыв
-var drawFire = function (x1, y1) {
+var fireLines = function (x1, y1) {
     ctx.beginPath();
     ctx.moveTo(x1 - 30, y1 - 0);
     ctx.lineTo(x1 - 60, y1 - 30);
@@ -223,8 +232,7 @@ var drawFire = function (x1, y1) {
     ctx.lineTo(x1 + 30, y1 - 0);
     ctx.fillStyle = "red";
     ctx.fill();
-//    $("ship").fadeOut(3000);
-    };
+   };
 
 // Класс Торпеды
 var Torpedo = function () {
@@ -306,12 +314,9 @@ Torpedo.prototype.move = function () {
   // Новые координаты
   this.position = new Block(this.x0Torpedo, this.y0Torpedo, this.x1Torpedo, this.y1Torpedo);
 
-  // Сравнение на попадание ======>>>>>
-  if (this.position.equal(ship.position)) {
-      scoreNumber += 1;
-      speed = 0;
-      drawFire(this.x1Torpedo, this.y1Torpedo);
-  }
+  // Координаты взрыва
+  this.firePosition = new Block(this.x0Torpedo, this.y0Torpedo, this.x1Torpedo, this.y1Torpedo);
+
 };
 
 // Рисунок торпеды
@@ -319,6 +324,17 @@ Torpedo.prototype.draw = function () {
    score3 = this.angleInDegrees; // проверка текущего угла
    this.position.drawTorpedo();
    drawTube(this.x0Tube, this.y0Tube, this.x1Tube, this.y1Tube);
+};
+
+// Рисунок взрыва
+Torpedo.prototype.drawFire = function () {
+    // Сравнение на попадание ======>>>>>
+    if (this.position.equal(ship.position)) {
+      scoreNumber += 1;
+      speed = 0;
+      shipwreckCount = 1;
+      this.firePosition.shipFire();
+    }
 };
 
 // Расчет угла и Пуск
@@ -367,14 +383,15 @@ setInterval(function () {
     drawScoreNumber();
 
     drawSea();
-//    drawFire(710, 250);
 
     ship.draw(); // Рисуем судно
     ship.move(); // Перемещаем судно
 
     torpedo.draw(); // Рисует торпеду
     torpedo.move(); // Запускает торпеду
+    torpedo.drawFire(); // Рисунок взрыва
+
+//    drawShipwreck(); // Рисунок кораблекрушения
 
     ctx.strokeRect(0, 0, width, height);
 }, stepSetInterval);
-
