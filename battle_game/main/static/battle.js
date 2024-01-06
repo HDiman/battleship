@@ -80,6 +80,45 @@ var drawSea = function () {
 
 // ==================================================================================
 
+// Вычисляем ширину и высоту в ячейках - для информации
+//var blockSize = 1;
+//var widthInBlocks = width / blockSize;
+//var heightInBlocks = height / blockSize;
+
+
+// Задаем конструктор Block (ячейка)
+var Block = function (x0, y0, x1, y1) {
+  this.x0 = x0;
+  this.y0 = y0;
+  this.x1 = x1;
+  this.y1 = y1;
+};
+
+// Рисуем торпеду в позиции ячейки
+Block.prototype.drawTorpedo = function () {
+//  let x0Torpedo = this.x0;
+//  let y0Torpedo = this.y0;
+//  let x1Torpedo = this.x1;
+//  let y1Torpedo = this.y1;
+  torpedoLines(this.x0, this.y0, this.x1, this.y1);
+};
+
+//// Рисуем круг в позиции ячейки
+//Block.prototype.drawCircle = function (color) {
+//  var centerX = this.col * blockSize + blockSize / 2;
+//  var centerY = this.row * blockSize + blockSize / 2;
+//  ctx.fillStyle = color;
+//  circle(centerX, centerY, blockSize / 2, true);
+//};
+
+// Проверяем, находится ли эта ячейка в той же позиции, что и ячейка otherBlock
+//Block.prototype.equal = function (otherBlock) {
+//  return this.col === otherBlock.col && this.row === otherBlock.row;
+//};
+
+
+// ==================================================================================
+
 // Рисуем корабль
 var drawShip = function (x, y) {
     ctx.beginPath();
@@ -91,15 +130,6 @@ var drawShip = function (x, y) {
     ctx.stroke();
 };
 
-// изменение позиции корабля
-var update = function (coordinate) {
-    coordinate += 1;
-    if (coordinate > 1420) {
-        coordinate = -210;
-    }
-    return coordinate;
-};
-
 // Создаем класс Ship
 var Ship = function () {
     this.xShip = -210;
@@ -108,14 +138,18 @@ var Ship = function () {
 };
 
 // Добавляем функции перемещения
-Ship.prototype.move = function () {
-
+Ship.prototype.update = function (coordinate) {
+    coordinate += 1;
+    if (coordinate > 1420) {
+        coordinate = -210;
+    }
+    return coordinate;
 };
 
 // Рисуем объект судно
 Ship.prototype.draw = function () {
     drawShip(this.xShip, this.yShip); // Рисует движущийся корабль
-    this.xShip = update(this.xShip);
+    this.xShip = this.update(this.xShip);
     this.yShip = this.yShip;
 };
 
@@ -126,7 +160,7 @@ var ship = new Ship();
 // ==================================================================================
 
 // Рисуем торпеду
-var drawTorpedo = function (x0, y0, x1, y1) {
+var torpedoLines = function (x0, y0, x1, y1) { // draw -> drawTorpedo -> torpedoLines
     ctx.beginPath();
     ctx.moveTo(x0, y0);
     ctx.lineTo(x1, y1);
@@ -150,10 +184,15 @@ var Torpedo = function () {
    // Расчет размера торпеды
    this.torpedoSize = 50;
 
-   // Расчет радианта. Начальные значения X Y
+   // Расчет радианта. Начальные и конечные значения X Y
    this.angleInRadians = this.angleInDegrees * Math.PI / 180;
    this.x0Torpedo = 710 + 1 * Math.cos(this.angleInRadians);
    this.y0Torpedo = 696 - 1 * Math.sin(this.angleInRadians);
+   this.x1Torpedo = this.x0Torpedo + this.torpedoSize * Math.cos(this.angleInRadians);
+   this.y1Torpedo = this.y0Torpedo - this.torpedoSize * Math.sin(this.angleInRadians);
+
+   // Создание объекта внутри класса
+   this.position = new Block(this.x0Torpedo, this.y0Torpedo, this.x1Torpedo, this.y1Torpedo);
 
    // Значение 0 - нет движения, 1 - есть движение
    this.angelSpeedTorpedo = 0;
@@ -212,12 +251,16 @@ Torpedo.prototype.move = function () {
   // Расчет конечной точки пушки
     this.x1Tube = this.x0Tube + 50 * Math.cos(this.angleInRadians);
     this.y1Tube = this.y0Tube - 50 * Math.sin(this.angleInRadians);
+
+  // Новые координаты
+  this.position = new Block(this.x0Torpedo, this.y0Torpedo, this.x1Torpedo, this.y1Torpedo);
 };
 
 // Рисунок торпеды
 Torpedo.prototype.draw = function () {
    score3 = this.angleInDegrees; // проверка текущего угла
-   drawTorpedo(this.x0Torpedo, this.y0Torpedo, this.x1Torpedo, this.y1Torpedo);
+   this.position.drawTorpedo();
+//   torpedoLines(this.x0Torpedo, this.y0Torpedo, this.x1Torpedo, this.y1Torpedo);
    drawTube(this.x0Tube, this.y0Tube, this.x1Tube, this.y1Tube);
 };
 
@@ -249,6 +292,7 @@ $("body").keydown(function (event) {
     torpedo.setLaunch(setting);
   }
 });
+
 
 // ==================================================================================
 
