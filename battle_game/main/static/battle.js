@@ -122,10 +122,10 @@ Block.prototype.drawTorpedo = function () {
 // Рисуем корабль
 var drawShip = function (x, y) {
     ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + 200, y); // линия вправо
-    ctx.lineTo(x + 130, y + 40); // линия вниз
-    ctx.lineTo(x + 30, y + 40); // линия влево
+    ctx.moveTo(x, y); // x0, y0
+    ctx.lineTo(x + 100, y); // линия вправо x1, y1
+    ctx.lineTo(x + 180, y - 50); // линия вверх
+    ctx.lineTo(x - 40, y - 50); // линия влево
     ctx.closePath(); // смыкание начала и конца рисунка (левая стена)
     ctx.stroke();
 };
@@ -133,7 +133,7 @@ var drawShip = function (x, y) {
 // Создаем класс Ship
 var Ship = function () {
     this.xShip = -210;
-    this.yShip = 210;
+    this.yShip = 250;
     this.coordinate = 0;
 };
 
@@ -260,7 +260,6 @@ Torpedo.prototype.move = function () {
 Torpedo.prototype.draw = function () {
    score3 = this.angleInDegrees; // проверка текущего угла
    this.position.drawTorpedo();
-//   torpedoLines(this.x0Torpedo, this.y0Torpedo, this.x1Torpedo, this.y1Torpedo);
    drawTube(this.x0Tube, this.y0Tube, this.x1Tube, this.y1Tube);
 };
 
