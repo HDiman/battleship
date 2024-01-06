@@ -5,8 +5,8 @@
 // Направлять пушку вправо или влево +
 // Нарисовать движущуюся торпеду по направлению пушки +
 // Нарисовать уменьшающуюся торпеду +
+// Написать функцию по контакту +
 
-// Написать функцию по контакту
 // Нарисовать взрыв
 // Нарисовать пять разных типов кораблей
 // Рандомно направлять корабли по морю
@@ -18,6 +18,10 @@
 // половина 710 x 348
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
+
+// Скорость корабля
+var speed = 1;
+
 
 // Получаем ширину и высоту элемента canvas
 var width = canvas.width;
@@ -152,7 +156,7 @@ var Ship = function () {
 
 // Добавляем функции перемещения
 Ship.prototype.update = function (coordinate) {
-    coordinate += 1;
+    coordinate += speed;
     if (coordinate > 1420) {
         coordinate = -210;
     }
@@ -195,6 +199,28 @@ var drawTube = function (x0, y0, x1, y1) {
     ctx.moveTo(x0, y0);
     ctx.lineTo(x1, y1);
     ctx.stroke();
+    };
+
+// Рисуем взрыв
+var drawFire = function (x1, y1) {
+    ctx.beginPath();
+    ctx.moveTo(x1 - 30, y1 - 0);
+    ctx.lineTo(x1 - 60, y1 - 30);
+    ctx.lineTo(x1 - 30, y1 - 20);
+    ctx.lineTo(x1 - 50, y1 - 55);
+    ctx.lineTo(x1 - 20, y1 - 40);
+    ctx.lineTo(x1 - 35, y1 - 75);
+    ctx.lineTo(x1 - 10, y1 - 60);
+    ctx.lineTo(x1 - 0, y1 - 85);
+    ctx.lineTo(x1 + 10, y1 - 60);
+    ctx.lineTo(x1 + 35, y1 - 75);
+    ctx.lineTo(x1 + 20, y1 - 40);
+    ctx.lineTo(x1 + 50, y1 - 55);
+    ctx.lineTo(x1 + 30, y1 - 20);
+    ctx.lineTo(x1 + 60, y1 - 30);
+    ctx.lineTo(x1 + 30, y1 - 0);
+    ctx.fillStyle = "red";
+    ctx.fill();
     };
 
 // Класс Торпеды
@@ -277,9 +303,11 @@ Torpedo.prototype.move = function () {
   // Новые координаты
   this.position = new Block(this.x0Torpedo, this.y0Torpedo, this.x1Torpedo, this.y1Torpedo);
 
-  // Сравнение на попадание
+  // Сравнение на попадание ======>>>>>
   if (this.position.equal(ship.position)) {
       scoreNumber += 1;
+      speed = 0;
+      drawFire(this.x1Torpedo, this.y1Torpedo);
   }
 };
 
@@ -336,6 +364,7 @@ setInterval(function () {
     drawScoreNumber();
 
     drawSea();
+//    drawFire(710, 250);
 
     ship.draw(); // Рисуем судно
     ship.move(); // Перемещаем судно
