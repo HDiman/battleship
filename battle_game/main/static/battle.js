@@ -32,6 +32,7 @@ var heightInBlocks = height / blockSize;
 var score1 = 0;
 var score2 = 0;
 var score3 = 0;
+var scoreNumber = 0;
 
 // Рисуем рамку
 var drawBorder = function () {
@@ -42,7 +43,7 @@ var drawBorder = function () {
   ctx.fillRect(width - blockSize, 0, blockSize, height);
 };
 
-// Выводим координаты в левом верхнем углу
+// Выводим координаты по Х
 var drawScoreOne = function () {
   ctx.font = "20px Courier";
   ctx.fillStyle = "Black";
@@ -51,7 +52,7 @@ var drawScoreOne = function () {
   ctx.fillText("X: " + score1, blockSize, blockSize);
 };
 
-// Выводим координаты в левом верхнем углу
+// Выводим координаты по Y
 var drawScoreTwo = function () {
   ctx.font = "20px Courier";
   ctx.fillStyle = "Black";
@@ -60,13 +61,22 @@ var drawScoreTwo = function () {
   ctx.fillText("Y: " + score2, blockSize + 300, blockSize);
 };
 
-// Выводим координаты в левом верхнем углу
+// Выводим координаты Угла
 var drawScoreAngle = function () {
   ctx.font = "20px Courier";
   ctx.fillStyle = "Black";
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
   ctx.fillText("Angle: " + score3, blockSize + 600, blockSize);
+};
+
+// Выводим координаты Сбитых судов
+var drawScoreNumber = function () {
+  ctx.font = "20px Courier";
+  ctx.fillStyle = "Black";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "top";
+  ctx.fillText("Попаданий: " + scoreNumber, blockSize + 900, blockSize);
 };
 
 // Рисуем море
@@ -80,12 +90,6 @@ var drawSea = function () {
 
 // ==================================================================================
 
-// Вычисляем ширину и высоту в ячейках - для информации
-//var blockSize = 1;
-//var widthInBlocks = width / blockSize;
-//var heightInBlocks = height / blockSize;
-
-
 // Задаем конструктор Block (ячейка)
 var Block = function (x0, y0, x1, y1) {
   this.x0 = x0;
@@ -94,21 +98,30 @@ var Block = function (x0, y0, x1, y1) {
   this.y1 = y1;
 };
 
-// Рисуем торпеду в позиции ячейки
-Block.prototype.drawTorpedo = function () {
-  torpedoLines(this.x0, this.y0, this.x1, this.y1);
-};
-
 // Рисуем судно в позиции ячейки
 Block.prototype.drawShip = function () {
   shipLines(this.x0, this.y0, this.x1, this.y1);
 };
 
-// Проверяем, находится ли эта ячейка в той же позиции, что и ячейка otherBlock
-//Block.prototype.equal = function (otherBlock) {
-//  return this.col === otherBlock.col && this.row === otherBlock.row;
-//};
+// Рисуем торпеду в позиции ячейки
+Block.prototype.drawTorpedo = function () {
+  torpedoLines(this.x0, this.y0, this.x1, this.y1);
+};
 
+// Проверяем, находится ли эта ячейка в той же позиции, что и ячейка otherBlock
+Block.prototype.equal = function (otherBlock) {
+   if (this.y1 <= otherBlock.y1) {
+      var yHit = true;
+   } else {
+      var yHit = false;
+   }
+   if (this.x1 >= otherBlock.x0 && this.x1 <= otherBlock.x1) {
+      var xHit = true;
+   } else {
+      var xHit = false;
+   }
+    return yHit && xHit;
+};
 
 // ==================================================================================
 
@@ -243,8 +256,8 @@ Torpedo.prototype.move = function () {
   score1 = this.x1Torpedo; // X coordinate
   score2 = this.y1Torpedo; // Y coordinate
 
-  // Возврат на начальную позицию при превышении 300 по Y
-  if (this.y1Torpedo < 250) {
+  // Возврат на начальную позицию при превышении 250 по Y
+  if (this.y1Torpedo < 249) {
     this.torpedoSize = 50;
     this.x0Torpedo = 710 + 1 * Math.cos(this.angleInRadians);
     this.y0Torpedo = 696 - 1 * Math.sin(this.angleInRadians);
@@ -263,6 +276,11 @@ Torpedo.prototype.move = function () {
 
   // Новые координаты
   this.position = new Block(this.x0Torpedo, this.y0Torpedo, this.x1Torpedo, this.y1Torpedo);
+
+  // Сравнение на попадание
+  if (this.position.equal(ship.position)) {
+      scoreNumber += 1;
+  }
 };
 
 // Рисунок торпеды
@@ -315,14 +333,15 @@ setInterval(function () {
     drawScoreOne();
     drawScoreTwo();
     drawScoreAngle();
+    drawScoreNumber();
 
     drawSea();
 
-    torpedo.draw(); // Рисует торпеду
-    torpedo.move(); // Запускает торпеду
-
     ship.draw(); // Рисуем судно
     ship.move(); // Перемещаем судно
+
+    torpedo.draw(); // Рисует торпеду
+    torpedo.move(); // Запускает торпеду
 
 
     ctx.strokeRect(0, 0, width, height);
