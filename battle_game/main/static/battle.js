@@ -100,10 +100,9 @@ Block.prototype.drawTorpedo = function () {
 };
 
 // Рисуем судно в позиции ячейки
-//Block.prototype.drawShip = function () {
-//  torpedoLines(this.x0, this.y0, this.x1, this.y1);
-
-//};
+Block.prototype.drawShip = function () {
+  shipLines(this.x0, this.y0, this.x1, this.y1);
+};
 
 // Проверяем, находится ли эта ячейка в той же позиции, что и ячейка otherBlock
 //Block.prototype.equal = function (otherBlock) {
@@ -114,21 +113,28 @@ Block.prototype.drawTorpedo = function () {
 // ==================================================================================
 
 // Рисуем корабль
-var drawShip = function (x, y) {
+var shipLines = function (x0, y0, x1, y1) {
     ctx.beginPath();
-    ctx.moveTo(x, y); // x0, y0
-    ctx.lineTo(x + 100, y); // x1, y1 линия вправо
-    ctx.lineTo(x + 180, y - 50); // линия вверх
-    ctx.lineTo(x - 40, y - 50); // линия влево
+    ctx.moveTo(x0, y0); // x0, y0
+    ctx.lineTo(x1, y1); // x1, y1 линия вправо
+    ctx.lineTo(x0 + 180, y0 - 50); // линия вверх
+    ctx.lineTo(x0 - 40, y0 - 50); // линия влево
     ctx.closePath(); // смыкание начала и конца рисунка (левая стена)
     ctx.stroke();
 };
 
 // Создаем класс Ship
 var Ship = function () {
-    this.xShip = -210;
-    this.yShip = 250;
+
+    this.x0Ship = -210;
+    this.y0Ship = 250;
+    this.x1Ship = this.x0Ship + 100;
+    this.y1Ship = this.y0Ship;
+
     this.coordinate = 0;
+
+    // Создание объекта внутри класса
+    this.position = new Block(this.x0Ship, this.y0Ship, this.x1Ship, this.y1Ship);
 };
 
 // Добавляем функции перемещения
@@ -142,12 +148,21 @@ Ship.prototype.update = function (coordinate) {
 
 // Рисуем объект судно
 Ship.prototype.draw = function () {
-    drawShip(this.xShip, this.yShip); // Рисует движущийся корабль
-    this.xShip = this.update(this.xShip);
-    this.yShip = this.yShip;
+    this.position.drawShip(); // Рисует движущийся корабль
 };
 
-// Создание объекта торпеды
+// Перемещаем судно
+Ship.prototype.move = function () {
+
+    this.x0Ship = this.update(this.x0Ship);
+    this.y0Ship = this.y0Ship;
+    this.x1Ship = this.x0Ship + 100;
+    this.y1Ship = this.y0Ship;
+
+    this.position = new Block(this.x0Ship, this.y0Ship, this.x1Ship, this.y1Ship);
+};
+
+// Создание объекта судна
 var ship = new Ship();
 
 
@@ -307,7 +322,7 @@ setInterval(function () {
     torpedo.move(); // Запускает торпеду
 
     ship.draw(); // Рисуем судно
-//    ship.move(); // Перемещаем судно
+    ship.move(); // Перемещаем судно
 
 
     ctx.strokeRect(0, 0, width, height);
