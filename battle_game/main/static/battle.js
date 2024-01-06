@@ -1,13 +1,13 @@
 // Настройка холста +
 // Нарисовать счетчик подбитых кораблей +
 // Нарисовать линию моря +
+// Нарисовать торпедную пушку +
 // Направлять пушку вправо или влево +
 // Нарисовать движущуюся торпеду по направлению пушки +
+// Нарисовать уменьшающуюся торпеду +
 
-// Нарисовать уменьшающуюся торпеду
 // Написать функцию по контакту
 // Нарисовать взрыв
-// Нарисовать торпедную пушку
 // Нарисовать пять разных типов кораблей
 // Рандомно направлять корабли по морю
 // Если есть контакт, то нарисовать взрыв и прибавить очко
@@ -77,6 +77,9 @@ var drawSea = function () {
     ctx.stroke();
 };
 
+
+// ==================================================================================
+
 // Рисуем корабль
 var drawShip = function (x, y) {
     ctx.beginPath();
@@ -91,11 +94,34 @@ var drawShip = function (x, y) {
 // изменение позиции корабля
 var update = function (coordinate) {
     coordinate += 1;
-if (coordinate > 1420) {
-    coordinate = -150;
-}
+    if (coordinate > 1420) {
+        coordinate = -210;
+    }
     return coordinate;
 };
+
+// Создаем класс Ship
+var Ship = function () {
+    this.xShip = -210;
+    this.yShip = 210;
+    this.coordinate = 0;
+};
+
+// Добавляем функции перемещения
+Ship.prototype.move = function () {
+
+};
+
+// Рисуем объект судно
+Ship.prototype.draw = function () {
+    drawShip(this.xShip, this.yShip); // Рисует движущийся корабль
+    this.xShip = update(this.xShip);
+    this.yShip = this.yShip;
+};
+
+// Создание объекта торпеды
+var ship = new Ship();
+
 
 // ==================================================================================
 
@@ -228,8 +254,7 @@ $("body").keydown(function (event) {
 
 // Запуск программы
 // Основной движок
-var x = -100;
-var y = 210;
+
 setInterval(function () {
     ctx.clearRect(0, 0, width, height);
 
@@ -244,9 +269,9 @@ setInterval(function () {
     torpedo.draw(); // Рисует торпеду
     torpedo.move(); // Запускает торпеду
 
-    drawShip(x, y); // Рисует движущийся корабль
-    x = update(x);
-    y = y;
+    ship.draw(); // Рисуем судно
+//    ship.move(); // Перемещаем судно
+
 
     ctx.strokeRect(0, 0, width, height);
 }, 30);
