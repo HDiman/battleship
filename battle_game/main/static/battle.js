@@ -20,6 +20,9 @@ var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
 
+// Запуск судна сначала
+var startOverShip = 0;
+
 // Счетчик горения судна
 var shipwreckCount = 0;
 
@@ -187,6 +190,15 @@ Ship.prototype.move = function () {
     this.x1Ship = this.x0Ship + 100;
     this.y1Ship = this.y0Ship;
 
+    if (startOverShip === 1) {
+        this.x0Ship = -210;
+        this.y0Ship = 250;
+        this.x1Ship = this.x0Ship + 100;
+        this.y1Ship = this.y0Ship;
+        this.coordinate = 0;
+        startOverShip = 0;
+    }
+
     this.position = new Block(this.x0Ship, this.y0Ship, this.x1Ship, this.y1Ship);
 };
 
@@ -232,6 +244,12 @@ var fireLines = function (x1, y1) {
     ctx.lineTo(x1 + 30, y1 - 0);
     ctx.fillStyle = "red";
     ctx.fill();
+    clearInterval(intervalId); // останавливаем цикл
+    setTimeout(() => {  // запускаем цикл
+        startOverShip = 1;
+        speed = 1;
+        playAgain();
+    }, 80)
    };
 
 // Класс Торпеды
@@ -280,9 +298,9 @@ Torpedo.prototype.move = function () {
   // Изменение размера торпеды
   if (this.angelSpeedTorpedo === 1) {
     if (this.angleInDegrees < 95 && this.angleInDegrees > 85) {
-        this.torpedoSize -= 0.1098;
+        this.torpedoSize -= 0.12;
     } else {
-        this.torpedoSize -= 0.09;
+        this.torpedoSize -= 0.1;
     }
     if (this.torpedoSize < 2) {
         this.torpedoSize = 1;
@@ -368,11 +386,12 @@ $("body").keydown(function (event) {
 
 
 // ==================================================================================
+var intervalId;
 
 // Запуск программы
 // Основной движок
-
-setInterval(function () {
+function playAgain() {
+    intervalId = setInterval(function () {
     ctx.clearRect(0, 0, width, height);
 
     drawBorder();
@@ -394,4 +413,7 @@ setInterval(function () {
 //    drawShipwreck(); // Рисунок кораблекрушения
 
     ctx.strokeRect(0, 0, width, height);
-}, stepSetInterval);
+    }, stepSetInterval);
+};
+
+playAgain();
